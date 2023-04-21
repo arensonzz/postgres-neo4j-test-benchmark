@@ -84,7 +84,11 @@ public class DataGenerator {
 
 
 
-    public ResultSet executeSQLQuery(String sqlQuery) {
+    public ResultSet executeSQLQuery(String sqlQuery, String database) {
+        // Following is an example usage of this method:
+        // ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS WORKCOUNT FROM WORK");
+
+
 
         Connection conn = null;
         Statement stmt = null;
@@ -101,7 +105,7 @@ public class DataGenerator {
 
             Class.forName(jdbc_driver);
 
-            conn = DriverManager.getConnection(default_db_url, username, password);
+            conn = DriverManager.getConnection(default_db_url+database, username, password);
             stmt = conn.createStatement();
 
             resultSet = stmt.executeQuery(sqlQuery);
@@ -160,21 +164,21 @@ public class DataGenerator {
 
                 Class.forName(db_driver);
 
-                conn = DriverManager.getConnection(db_url, db_username, db_password);
+                conn = DriverManager.getConnection(db_url+"warehouse", db_username, db_password);
                 stmt = conn.createStatement();
 
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.customer;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.invoice;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.work;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.workhours;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.workinvoice;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.worktarget;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.target;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.useditem;");
+                stmt.addBatch("TRUNCATE TABLE customer;");
+                stmt.addBatch("TRUNCATE TABLE invoice;");
+                stmt.addBatch("TRUNCATE TABLE work;");
+                stmt.addBatch("TRUNCATE TABLE workhours;");
+                stmt.addBatch("TRUNCATE TABLE workinvoice;");
+                stmt.addBatch("TRUNCATE TABLE worktarget;");
+                stmt.addBatch("TRUNCATE TABLE target;");
+                stmt.addBatch("TRUNCATE TABLE useditem;");
 
-                stmt.addBatch("TRUNCATE TABLE warehouse.worktype;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.item;");
+                stmt.addBatch("TRUNCATE TABLE worktype;");
+                stmt.addBatch("TRUNCATE TABLE item;");
 
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=1;");
                 stmt.executeBatch();
@@ -234,13 +238,13 @@ public class DataGenerator {
 
                 Class.forName(db_driver);
 
-                conn = DriverManager.getConnection(db_url, db_username, db_password);
+                conn = DriverManager.getConnection(db_url+"warehouse", db_username, db_password);
                 stmt = conn.createStatement();
 
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.work;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.useditem;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.workhours;");
+                stmt.addBatch("TRUNCATE TABLE work;");
+                stmt.addBatch("TRUNCATE TABLE useditem;");
+                stmt.addBatch("TRUNCATE TABLE workhours;");
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=1;");
                 stmt.executeBatch();
 
@@ -302,16 +306,16 @@ public class DataGenerator {
 
                 Class.forName(db_driver);
 
-                conn = DriverManager.getConnection(db_url, db_username, db_password);
+                conn = DriverManager.getConnection(db_url+"warehouse", db_username, db_password);
                 stmt = conn.createStatement();
 
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0;");
 
-                stmt.addBatch("TRUNCATE TABLE warehouse.workinvoice;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.worktarget;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.target;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.invoice;");
-                stmt.addBatch("TRUNCATE TABLE warehouse.customer;");
+                stmt.addBatch("TRUNCATE TABLE workinvoice;");
+                stmt.addBatch("TRUNCATE TABLE worktarget;");
+                stmt.addBatch("TRUNCATE TABLE target;");
+                stmt.addBatch("TRUNCATE TABLE invoice;");
+                stmt.addBatch("TRUNCATE TABLE customer;");
 
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=1;");
                 stmt.executeBatch();
@@ -347,34 +351,41 @@ public class DataGenerator {
 
         String database = "testdata";
 
-        String dropDatabase = "DROP DATABASE `" + database + "`";
+        String dropDatabase = "DROP DATABASE " + database + "";
 
-        String createDatabase = "CREATE DATABASE IF NOT EXISTS `" + database + "`";
+        //String createDatabase = "CREATE DATABASE IF NOT EXISTS " + database + "";
+        String createDatabase = "CREATE DATABASE " + database + "";
 
-        String firstnames = "CREATE TABLE IF NOT EXISTS `firstnames` (" +
-                "`id` serial," +
-                "`firstname` varchar(100) NOT NULL," +
-                "PRIMARY KEY (`id`))";
+        String firstnames = "CREATE TABLE IF NOT EXISTS firstnames (" +
+                "id serial," +
+                "firstname varchar(100) NOT NULL," +
+                "PRIMARY KEY (id))";
 
-        String surnames = "CREATE TABLE IF NOT EXISTS `surnames` (" +
-                "`id` serial," +
-                "`surname` varchar(100) NOT NULL," +
-                "PRIMARY KEY (`id`))";
+        String surnames = "CREATE TABLE IF NOT EXISTS surnames (" +
+                "id serial," +
+                "surname varchar(100) NOT NULL," +
+                "PRIMARY KEY (id))";
 
-        String addresses = "CREATE TABLE IF NOT EXISTS `addresses` (" +
-                "`id` serial," +
-                "`street` varchar(200) NOT NULL," +
-                "`city` varchar(100) NOT NULL," +
-                "`district` varchar(100) NOT NULL," +
-                "`region` varchar(50) NOT NULL," +
-                "`postcode` varchar(50) NOT NULL," +
-                "PRIMARY KEY (`id`))";
+        String addresses = "CREATE TABLE IF NOT EXISTS addresses (" +
+                "id serial," +
+                "street varchar(200) NOT NULL," +
+                "city varchar(100) NOT NULL," +
+                "district varchar(100) NOT NULL," +
+                "region varchar(50) NOT NULL," +
+                "postcode varchar(50) NOT NULL," +
+                "PRIMARY KEY (id))";
 
-        executeSQLUpdate(dropDatabase, "jdbc:mariadb://127.0.0.1/", db_settings);
-        executeSQLUpdate(createDatabase, "jdbc:mariadb://127.0.0.1/", db_settings);
-        executeSQLUpdate(firstnames, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
-        executeSQLUpdate(surnames, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
-        executeSQLUpdate(addresses, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
+        executeSQLUpdate(dropDatabase, db_url, db_settings);
+        executeSQLUpdate(createDatabase, db_url, db_settings);
+        executeSQLUpdate(firstnames, db_url +  database, db_settings);
+        executeSQLUpdate(surnames, db_url +  database, db_settings);
+        executeSQLUpdate(addresses, db_url +  database, db_settings);
+
+//        executeSQLUpdate(dropDatabase, "jdbc:mariadb://127.0.0.1/", db_settings);
+//        executeSQLUpdate(createDatabase, "jdbc:mariadb://127.0.0.1/", db_settings);
+//        executeSQLUpdate(firstnames, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
+//        executeSQLUpdate(surnames, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
+//        executeSQLUpdate(addresses, "jdbc:mariadb://127.0.0.1/" +  database, db_settings);
 
     }
 
@@ -388,19 +399,19 @@ public class DataGenerator {
             surnames = new ArrayList<String>();
             addresses = new ArrayList<HashMap<String, String>>();
 
-            ResultSet rs = executeSQLQuery("SELECT firstname FROM testdata.firstnames;");
+            ResultSet rs = executeSQLQuery("SELECT firstname FROM firstnames;", "testdata");
             while (rs.next()) {
                 String firstName = rs.getString("firstname");
                 firstnames.add(firstName);
             }
 
-            rs = executeSQLQuery("SELECT surname FROM testdata.surnames;");
+            rs = executeSQLQuery("SELECT surname FROM surnames;", "testdata");
             while (rs.next()) {
                 String surName = rs.getString("surname");
                 surnames.add(surName);
             }
 
-            rs = executeSQLQuery("SELECT street, city, district, region, postcode FROM testdata.addresses;");
+            rs = executeSQLQuery("SELECT street, city, district, region, postcode FROM addresses;", "testdata");
             while (rs.next()) {
 
                 HashMap<String, String> address = new HashMap<String, String>();
@@ -436,7 +447,7 @@ public class DataGenerator {
 
     public int getWorkCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS WORKCOUNT FROM WAREHOUSE.WORK");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS WORKCOUNT FROM WORK", "warehouse");
 
         int workCount = 0;
 
@@ -451,7 +462,7 @@ public class DataGenerator {
 
     public int getWorkTypeCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS WORKTYPECOUNT FROM WAREHOUSE.WORKTYPE");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS WORKTYPECOUNT FROM WORKTYPE", "warehouse");
 
         int workTypeCount = 0;
 
@@ -466,7 +477,7 @@ public class DataGenerator {
 
     public int getItemCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS ITEMCOUNT FROM WAREHOUSE.ITEM");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS ITEMCOUNT FROM ITEM", "warehouse");
 
         int itemCount = 0;
 
@@ -481,7 +492,7 @@ public class DataGenerator {
 
     public int getCustomerCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS CUSTOMERCOUNT FROM WAREHOUSE.CUSTOMER");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS CUSTOMERCOUNT FROM CUSTOMER", "warehouse");
 
         int customerCount = 0;
 
@@ -496,7 +507,7 @@ public class DataGenerator {
 
     public int getInvoiceCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS INVOICECOUNT FROM WAREHOUSE.INVOICE");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS INVOICECOUNT FROM INVOICE", "warehouse");
 
         int invoiceCount = 0;
 
@@ -511,7 +522,7 @@ public class DataGenerator {
 
     public int getTargetCount() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS TARGETCOUNT FROM WAREHOUSE.TARGET");
+        ResultSet rs = executeSQLQuery("SELECT COUNT(*) AS TARGETCOUNT FROM TARGET", "warehouse");
 
         int targetCount = 0;
 
@@ -526,7 +537,7 @@ public class DataGenerator {
 
     public int getLastCustomerId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.CUSTOMER");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM CUSTOMER", "warehouse");
 
         int lastCustomerId = 0;
 
@@ -541,7 +552,7 @@ public class DataGenerator {
 
     public int getLastWorkId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.WORK");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WORK", "warehouse");
 
         int workId = 0;
 
@@ -556,7 +567,7 @@ public class DataGenerator {
 
     public int getLastInvoiceId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.INVOICE");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM INVOICE", "warehouse");
 
         int invoiceId = 0;
 
@@ -571,7 +582,7 @@ public class DataGenerator {
 
     public int getLastTargetId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.TARGET");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM TARGET", "warehouse");
 
         int targetId = 0;
 
@@ -586,7 +597,7 @@ public class DataGenerator {
 
     public int getLastItemId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.ITEM");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM ITEM", "warehouse");
 
         int itemId = 0;
 
@@ -601,7 +612,7 @@ public class DataGenerator {
 
     public int getLastWorkTypeId() throws SQLException {
 
-        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WAREHOUSE.WORKTYPE");
+        ResultSet rs = executeSQLQuery("SELECT MAX(ID) AS LASTID FROM WORKTYPE", "warehouse");
 
         int workTypeId = 0;
 
@@ -634,14 +645,14 @@ public class DataGenerator {
         session.close();
         driver.close();
 
-        String deleteInvoicesSQL = "DELETE FROM warehouse.invoice WHERE customerId = " + customerId;
-        String deleteCustomerSQL = "DELETE FROM warehouse.customer WHERE id = " + customerId;
+        String deleteInvoicesSQL = "DELETE FROM invoice WHERE customerId = " + customerId;
+        String deleteCustomerSQL = "DELETE FROM customer WHERE id = " + customerId;
 
         for (String db_url : sql_databases.keySet()) {
 
             String[] db_settings = sql_databases.get(db_url);
-            executeSQLUpdate(deleteInvoicesSQL, db_url, db_settings);
-            executeSQLUpdate(deleteCustomerSQL, db_url, db_settings);
+            executeSQLUpdate(deleteInvoicesSQL, db_url+"warehouse", db_settings);
+            executeSQLUpdate(deleteCustomerSQL, db_url+"warehouse", db_settings);
 
         }
 
@@ -664,40 +675,26 @@ public class DataGenerator {
     public void createIndexesSQL() {
 
 
-        String createInvoiceIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS invoiceIndex ON warehouse.invoice(previousinvoice)";
-        String createInvoiceIndexSQL = "CREATE INDEX invoiceIndex ON warehouse.invoice(previousinvoice)";
-        String createWorktypeIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS worktypeIndex ON warehouse.worktype(price)";
-        String createWorktypeIndexSQL = "CREATE INDEX worktypeIndex ON warehouse.worktype(price)";
-        String createWorkhoursIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS workhoursIndex ON warehouse.workhours(hours,discount)";
-        String createWorkhoursIndexSQL = "CREATE INDEX workhoursIndex ON warehouse.workhours(hours,discount)";
-        String createUseditemIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS usedItemIndex ON warehouse.useditem(amount, discount)";
-        String createUseditemIndexSQL = "CREATE INDEX usedItemIndex ON warehouse.useditem(amount, discount)";
-        String createItemIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS ItemIndex ON warehouse.item(purchaseprice)";
-        String createItemIndexSQL = "CREATE INDEX ItemIndex ON warehouse.item(purchaseprice)";
+        String createInvoiceIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS invoiceIndex ON invoice(previousinvoice)";
+        String createInvoiceIndexSQL = "CREATE INDEX invoiceIndex ON invoice(previousinvoice)";
+        String createWorktypeIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS worktypeIndex ON worktype(price)";
+        String createWorktypeIndexSQL = "CREATE INDEX worktypeIndex ON worktype(price)";
+        String createWorkhoursIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS workhoursIndex ON workhours(hours,discount)";
+        String createWorkhoursIndexSQL = "CREATE INDEX workhoursIndex ON workhours(hours,discount)";
+        String createUseditemIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS usedItemIndex ON useditem(amount, discount)";
+        String createUseditemIndexSQL = "CREATE INDEX usedItemIndex ON useditem(amount, discount)";
+        String createItemIndexIfNotExistsSQL = "CREATE INDEX IF NOT EXISTS ItemIndex ON item(purchaseprice)";
+        String createItemIndexSQL = "CREATE INDEX ItemIndex ON item(purchaseprice)";
 
 
 
         for (String db_url : sql_databases.keySet()) {
-
-            if(db_url.contains("mariadb")) {
-
                 String[] db_settings = sql_databases.get(db_url);
-                executeSQLUpdate(createInvoiceIndexIfNotExistsSQL, db_url, db_settings);
-                executeSQLUpdate(createWorktypeIndexIfNotExistsSQL, db_url, db_settings);
-                executeSQLUpdate(createWorkhoursIndexIfNotExistsSQL, db_url, db_settings);
-                executeSQLUpdate(createUseditemIndexIfNotExistsSQL, db_url, db_settings);
-                executeSQLUpdate(createItemIndexIfNotExistsSQL, db_url, db_settings);
-
-            } else {
-
-                String[] db_settings = sql_databases.get(db_url);
-                executeSQLUpdate(createInvoiceIndexSQL, db_url, db_settings);
-                executeSQLUpdate(createWorktypeIndexSQL, db_url, db_settings);
-                executeSQLUpdate(createWorkhoursIndexSQL, db_url, db_settings);
-                executeSQLUpdate(createUseditemIndexSQL, db_url, db_settings);
-                executeSQLUpdate(createItemIndexSQL, db_url, db_settings);
-
-            }
+                executeSQLUpdate(createInvoiceIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(createWorktypeIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(createWorkhoursIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(createUseditemIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(createItemIndexSQL, db_url+"warehouse", db_settings);
 
         }
 
@@ -754,39 +751,24 @@ public class DataGenerator {
 
     public void deleteIndexesSQL() {
 
-        String dropInvoiceIndexIfExistsSQL = "DROP INDEX IF EXISTS invoiceIndex ON warehouse.invoice;";
-        String dropInvoiceIndexSQL = "DROP INDEX invoiceIndex ON warehouse.invoice;";
-        String dropWorktypeIndexIfExistsSQL = "DROP INDEX IF EXISTS worktypeIndex ON warehouse.worktype;";
-        String dropWorktypeIndexSQL = "DROP INDEX worktypeIndex ON warehouse.worktype;";
-        String dropWorkhoursIndexIfExistsSQL = "DROP INDEX IF EXISTS workhoursIndex ON warehouse.workhours;";
-        String dropWorkhoursIndexSQL = "DROP INDEX workhoursIndex ON warehouse.workhours;";
-        String dropUseditemIndexIfExistsSQL = "DROP INDEX IF EXISTS useditemIndex ON warehouse.useditem;";
-        String dropUseditemIndexSQL = "DROP INDEX useditemIndex ON warehouse.useditem;";
-        String dropItemIndexIfExistsSQL = "DROP INDEX IF EXISTS itemIndex ON warehouse.item;";
-        String dropItemIndexSQL = "DROP INDEX itemIndex ON warehouse.item;";
+        String dropInvoiceIndexIfExistsSQL = "DROP INDEX IF EXISTS invoiceIndex ON invoice;";
+        String dropInvoiceIndexSQL = "DROP INDEX invoiceIndex ON invoice;";
+        String dropWorktypeIndexIfExistsSQL = "DROP INDEX IF EXISTS worktypeIndex ON worktype;";
+        String dropWorktypeIndexSQL = "DROP INDEX worktypeIndex ON worktype;";
+        String dropWorkhoursIndexIfExistsSQL = "DROP INDEX IF EXISTS workhoursIndex ON workhours;";
+        String dropWorkhoursIndexSQL = "DROP INDEX workhoursIndex ON workhours;";
+        String dropUseditemIndexIfExistsSQL = "DROP INDEX IF EXISTS useditemIndex ON useditem;";
+        String dropUseditemIndexSQL = "DROP INDEX useditemIndex ON useditem;";
+        String dropItemIndexIfExistsSQL = "DROP INDEX IF EXISTS itemIndex ON item;";
+        String dropItemIndexSQL = "DROP INDEX itemIndex ON item;";
 
         for (String db_url : sql_databases.keySet()) {
-
-            if(db_url.contains("mariadb")) {
-
                 String[] db_settings = sql_databases.get(db_url);
-                executeSQLUpdate(dropInvoiceIndexIfExistsSQL, db_url, db_settings);
-                executeSQLUpdate(dropWorktypeIndexIfExistsSQL, db_url, db_settings);
-                executeSQLUpdate(dropWorkhoursIndexIfExistsSQL, db_url, db_settings);
-                executeSQLUpdate(dropUseditemIndexIfExistsSQL, db_url, db_settings);
-                executeSQLUpdate(dropItemIndexIfExistsSQL, db_url, db_settings);
-
-            } else {
-
-                String[] db_settings = sql_databases.get(db_url);
-                executeSQLUpdate(dropInvoiceIndexSQL, db_url, db_settings);
-                executeSQLUpdate(dropWorktypeIndexSQL, db_url, db_settings);
-                executeSQLUpdate(dropWorkhoursIndexSQL, db_url, db_settings);
-                executeSQLUpdate(dropUseditemIndexSQL, db_url, db_settings);
-                executeSQLUpdate(dropItemIndexSQL, db_url, db_settings);
-
-            }
-
+                executeSQLUpdate(dropInvoiceIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(dropWorktypeIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(dropWorkhoursIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(dropUseditemIndexSQL, db_url+"warehouse", db_settings);
+                executeSQLUpdate(dropItemIndexSQL, db_url+"warehouse", db_settings);
         }
 
     }
@@ -845,11 +827,11 @@ public class DataGenerator {
 
             try {
 
-                Connection connection = DriverManager.getConnection(db_url, username, password);
+                Connection connection = DriverManager.getConnection(db_url+"testdata", username, password);
 
-                PreparedStatement firstnames = connection.prepareStatement("INSERT INTO testdata.firstnames (firstname) VALUES (?)");
-                PreparedStatement surnames = connection.prepareStatement("INSERT INTO testdata.surnames (surname) VALUES (?)");
-                PreparedStatement addresses = connection.prepareStatement("INSERT INTO testdata.addresses (street,city,district,region,postcode) VALUES (?,?,?,?,?)");
+                PreparedStatement firstnames = connection.prepareStatement("INSERT INTO firstnames (firstname) VALUES (?)");
+                PreparedStatement surnames = connection.prepareStatement("INSERT INTO surnames (surname) VALUES (?)");
+                PreparedStatement addresses = connection.prepareStatement("INSERT INTO addresses (street,city,district,region,postcode) VALUES (?,?,?,?,?)");
 
 
                 boolean firstIteration = true;
@@ -1006,94 +988,87 @@ public class DataGenerator {
 
         String database = "warehouse";
 
-        String dropDatabase = "DROP DATABASE IF EXISTS `" + database + "`";
+        //String dropDatabase = "DROP DATABASE IF EXISTS " + database + "";
+        String dropDatabase = "DROP DATABASE " + database + "";
 
-        String createDatabase = "CREATE DATABASE IF NOT EXISTS `" + database + "`";
+        //String createDatabase = "CREATE DATABASE IF NOT EXISTS " + database + "";
+        String createDatabase = "CREATE DATABASE " + database + "";
 
-        String customer = "CREATE TABLE IF NOT EXISTS `customer` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`name` varchar(50) NOT NULL CHECK (`name` <> '')," +
-                "`address` varchar(150) NOT NULL CHECK (`address` <> '')," +
-                "PRIMARY KEY (`id`))";
+        String customer = "CREATE TABLE IF NOT EXISTS customer (" +
+                "id bigint NOT NULL," +
+                "name varchar(50) NOT NULL CHECK (name <> '')," +
+                "address varchar(150) NOT NULL CHECK (address <> '')," +
+                "PRIMARY KEY (id))";
 
-        String item = "CREATE TABLE IF NOT EXISTS `item` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`name` varchar(100) NOT NULL CHECK (`name` <> '')," +
-                "`balance` int(11) NOT NULL," +
-                "`unit` varchar(10) NOT NULL CHECK (`unit` <> '')," +
-                "`purchaseprice` decimal(65,10) NOT NULL," +
-                "`vat` decimal(65,2) NOT NULL," +
-                "`removed` tinyint(1) NOT NULL DEFAULT 0," +
-                "PRIMARY KEY (`id`))";
+        String item = "CREATE TABLE IF NOT EXISTS item (" +
+                "id bigint NOT NULL," +
+                "name varchar(100) NOT NULL CHECK (name <> '')," +
+                "balance int NOT NULL," +
+                "unit varchar(10) NOT NULL CHECK (unit <> '')," +
+                "purchaseprice decimal(65,10) NOT NULL," +
+                "vat decimal(65,2) NOT NULL," +
+                "removed smallint NOT NULL DEFAULT 0," +
+                "PRIMARY KEY (id))";
 
-        String workType = "CREATE TABLE IF NOT EXISTS `worktype` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`name` varchar(20) NOT NULL CHECK (`name` <> '')," +
-                "`price` bigint(20) NOT NULL," +
-                "PRIMARY KEY (`id`))";
+        String workType = "CREATE TABLE IF NOT EXISTS worktype (" +
+                "id bigint NOT NULL," +
+                "name varchar(20) NOT NULL CHECK (name <> '')," +
+                "price bigint NOT NULL," +
+                "PRIMARY KEY (id))";
 
-        String invoice = "CREATE TABLE IF NOT EXISTS `invoice` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`customerId` bigint(20) unsigned NOT NULL," +
-                "`state` int(11) NOT NULL," +
-                "`duedate` date DEFAULT NULL," +
-                "`previousinvoice` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`id`)," +
-                "KEY `customerId` (`customerId`)," +
-                "CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`customerId`) REFERENCES `customer` (`id`))";
+        String invoice = "CREATE TABLE IF NOT EXISTS invoice (" +
+                "id bigint NOT NULL," +
+                "customerId bigint NOT NULL," +
+                "state int NOT NULL," +
+                "duedate date DEFAULT NULL," +
+                "previousinvoice bigint NOT NULL," +
+                "PRIMARY KEY (id)," +
+                "CONSTRAINT customer_ibfk_1 FOREIGN KEY (customerId) REFERENCES customer (id))";
 
-        String target = "CREATE TABLE IF NOT EXISTS `target` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`name` varchar(100) NOT NULL CHECK (`name` <> '')," +
-                "`address` varchar(100) NOT NULL CHECK (`address` <> '')," +
-                "`customerid` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`id`)," +
-                "KEY `customerid` (`customerid`)," +
-                "CONSTRAINT `target_ibfk_1` FOREIGN KEY (`customerid`) REFERENCES `customer` (`id`))";
+        String target = "CREATE TABLE IF NOT EXISTS target (" +
+                "id bigint NOT NULL," +
+                "name varchar(100) NOT NULL CHECK (name <> '')," +
+                "address varchar(100) NOT NULL CHECK (address <> '')," +
+                "customerid bigint NOT NULL," +
+                "PRIMARY KEY (id)," +
+                "CONSTRAINT target_ibfk_1 FOREIGN KEY (customerid) REFERENCES customer (id))";
 
-        String work = "CREATE TABLE IF NOT EXISTS `work` (" +
-                "`id` bigint(20) unsigned NOT NULL," +
-                "`name` varchar(100) NOT NULL CHECK (`name` <> '')," +
-                "PRIMARY KEY (`id`))";
+        String work = "CREATE TABLE IF NOT EXISTS work (" +
+                "id bigint NOT NULL," +
+                "name varchar(100) NOT NULL CHECK (name <> '')," +
+                "PRIMARY KEY (id))";
 
-        String workInvoice = "CREATE TABLE IF NOT EXISTS `workinvoice` (" +
-                "`workId` bigint(20) unsigned NOT NULL," +
-                "`invoiceId` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`workId`,`invoiceId`)," +
-                "KEY `workId` (`workId`)," +
-                "KEY `invoiceId` (`invoiceId`)," +
-                "CONSTRAINT `workinvoice_ibfk_1` FOREIGN KEY (`workId`) REFERENCES `work` (`id`)," +
-                "CONSTRAINT `workinvoice_ibfk_2` FOREIGN KEY (`invoiceId`) REFERENCES `invoice` (`id`))";
+        String workInvoice = "CREATE TABLE IF NOT EXISTS workinvoice (" +
+                "workId bigint NOT NULL," +
+                "invoiceId bigint NOT NULL," +
+                "PRIMARY KEY (workId, invoiceId)," +
+                "CONSTRAINT workinvoice_ibfk_1 FOREIGN KEY (workId) REFERENCES work (id)," +
+                "CONSTRAINT workinvoice_ibfk_2 FOREIGN KEY (invoiceId) REFERENCES invoice (id))";
 
-        String workTarget = "CREATE TABLE IF NOT EXISTS `worktarget` (" +
-                "`workId` bigint(20) unsigned NOT NULL," +
-                "`targetId` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`workId`,`targetId`)," +
-                "KEY `workId` (`workId`)," +
-                "KEY `targetId` (`targetId`)," +
-                "CONSTRAINT `worktarget_ibfk_1` FOREIGN KEY (`workId`) REFERENCES `work` (`id`)," +
-                "CONSTRAINT `worktarget_ibfk_2` FOREIGN KEY (`targetId`) REFERENCES `target` (`id`))";
+        String workTarget = "CREATE TABLE IF NOT EXISTS worktarget (" +
+                "workId bigint NOT NULL," +
+                "targetId bigint NOT NULL," +
+                "PRIMARY KEY (workId, targetId)," +
+                "CONSTRAINT worktarget_ibfk_1 FOREIGN KEY (workId) REFERENCES work (id)," +
+                "CONSTRAINT worktarget_ibfk_2 FOREIGN KEY (targetId) REFERENCES target (id))";
 
-        String usedItem = "CREATE TABLE IF NOT EXISTS `useditem` (" +
-                "`amount` int(11) DEFAULT NULL CHECK (`amount` > 0)," +
-                "`discount` decimal(65,2) DEFAULT NULL," +
-                "`workId` bigint(20) unsigned NOT NULL," +
-                "`itemId` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`workId`,`itemId`)," +
-                "KEY `itemId` (`itemId`)," +
-                "CONSTRAINT `useditem_ibfk_1` FOREIGN KEY (`workId`) REFERENCES `work` (`id`)," +
-                "CONSTRAINT `useditem_ibfk_2` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`))";
+        String usedItem = "CREATE TABLE IF NOT EXISTS useditem (" +
+                "amount int DEFAULT NULL CHECK (amount > 0)," +
+                "discount decimal(65,2) DEFAULT NULL," +
+                "workId bigint NOT NULL," +
+                "itemId bigint NOT NULL," +
+                "PRIMARY KEY (workId,itemId)," +
+                "CONSTRAINT useditem_ibfk_1 FOREIGN KEY (workId) REFERENCES work (id)," +
+                "CONSTRAINT useditem_ibfk_2 FOREIGN KEY (itemId) REFERENCES item (id))";
 
-        String workHours = "CREATE TABLE IF NOT EXISTS `workhours` (" +
-                "`worktypeId` bigint(20) unsigned NOT NULL," +
-                "`hours` int(11) NOT NULL," +
-                "`discount` decimal(65,2) DEFAULT NULL," +
-                "`workId` bigint(20) unsigned NOT NULL," +
-                "PRIMARY KEY (`workId`,`worktypeId`)," +
-                "KEY `worktypeId` (`worktypeId`)," +
-                "KEY `workId` (`workId`)," +
-                "CONSTRAINT `workhours_ibfk_1` FOREIGN KEY (`workId`) REFERENCES `work` (`id`)," +
-                "CONSTRAINT `workhours_ibfk_2` FOREIGN KEY (`worktypeId`) REFERENCES `worktype` (`id`))";
+        String workHours = "CREATE TABLE IF NOT EXISTS workhours (" +
+                "worktypeId bigint NOT NULL," +
+                "hours int NOT NULL," +
+                "discount decimal(65,2) DEFAULT NULL," +
+                "workId bigint NOT NULL," +
+                "PRIMARY KEY (workId,worktypeId)," +
+                "CONSTRAINT workhours_ibfk_1 FOREIGN KEY (workId) REFERENCES work (id)," +
+                "CONSTRAINT workhours_ibfk_2 FOREIGN KEY (worktypeId) REFERENCES worktype (id))";
 
 
         for (String db_url : sql_databases.keySet()) {
@@ -1232,11 +1207,9 @@ public class DataGenerator {
 
                 Class.forName(db_driver);
 
-                Connection connection = DriverManager.getConnection(db_url, db_username, db_password);
+                Connection connection = DriverManager.getConnection(db_url+"warehouse", db_username, db_password);
 
-                PreparedStatement customer = connection.prepareStatement("INSERT INTO warehouse.customer (id, name, address) VALUES (?,?,?)");
-
-                String sqlInsert = "INSERT INTO warehouse.customer (id, name, address) VALUES (" + customerIndex + ",\"" + name + "\",\"" + streetAddress + "\")";
+                PreparedStatement customer = connection.prepareStatement("INSERT INTO customer (id, name, address) VALUES (?,?,?)");
 
                 customer.setInt(1, customerIndex);
                 customer.setString(2, name);
