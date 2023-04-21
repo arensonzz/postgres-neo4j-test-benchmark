@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
-    <artifactId>Graph_database_project</artifactId>
+    <artifactId>postgres-neo4j-test-benchmark</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -13,9 +13,42 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
+            </plugin>
+            <!-- Maven plugin for creating executable JAR file -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <!-- Configures the content of the created manifest -->
+                        <manifest>
+                            <!-- Adds the classpath to the created manifest -->
+                            <addClasspath>true</addClasspath>
+                            <!-- Configures the main class of the application --
+                            <!-- This attribute fixes "no main manifest attribute" error when running the JAR file --> 
+                            <mainClass>Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- Maven plugin for bundling dependencies in the JAR output file. -->
+            <!-- This plugin fixes "NoClassDefFoundError" when running the JAR file. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -30,15 +63,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <tinkerpop.version>3.4.2</tinkerpop.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.7.0</version>
-        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -49,13 +79,11 @@
             <artifactId>javafaker</artifactId>
             <version>0.18</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
             <version>${tinkerpop.version}</version>
         </dependency>
-
         <!-- when using Gremlin Server or Remote Gremlin Provider a driver is required -->
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -74,12 +102,6 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.neo4j.driver</groupId>
-            <artifactId>neo4j-java-driver</artifactId>
-            <version>4.1.1</version>
-        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -90,13 +112,25 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>4.7.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+        </dependency>
         <dependency>
             <groupId>org.opencypher.gremlin</groupId>
             <artifactId>cypher-gremlin-server-client</artifactId>
             <version>1.0.2</version>
         </dependency>
-
     </dependencies>
-
 </project>
