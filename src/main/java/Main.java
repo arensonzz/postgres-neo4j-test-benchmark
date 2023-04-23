@@ -8,7 +8,7 @@ public class Main
 
         String[] db_settings = new String[3];
 
-        String mysql_db_url = "jdbc:postgresql://localhost:5432/";
+        String mysql_db_url = "jdbc:postgresql://" + System.getenv("POSTGRES_HOST") + ":5432/";
         String db_driver = "org.postgresql.Driver";
         String db_username = "postgres";
         String db_password = System.getenv("POSTGRES_PASSWORD");
@@ -21,7 +21,7 @@ public class Main
 
         HashMap<String, String> neo4j_settings = new HashMap<>();
 
-        String neo4J_db_url = "bolt://localhost:7687";
+        String neo4J_db_url = "bolt://" + System.getenv("NEO4J_HOST") + ":7687";
         String neo4J_auth = System.getenv("NEO4J_AUTH");
         String neo4J_password = neo4J_auth.substring(neo4J_auth.lastIndexOf("/") + 1);
         String neo4J_username = neo4J_auth.substring(0, neo4J_auth.lastIndexOf("/"));

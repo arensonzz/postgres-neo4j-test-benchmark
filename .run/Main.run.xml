@@ -4,6 +4,8 @@
       <env name="project_name" value="postgres-neo4j-test-benchmark" />
       <env name="POSTGRES_PASSWORD" value="postgres" />
       <env name="NEO4J_AUTH" value="neo4j/12345678" />
+      <env name="POSTGRES_HOST" value="localhost" />
+      <env name="NEO4J_HOST" value="localhost" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="postgres-neo4j-test-benchmark" />
