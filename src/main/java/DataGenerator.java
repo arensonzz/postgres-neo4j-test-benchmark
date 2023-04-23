@@ -2,14 +2,14 @@ import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
 
+import java.beans.JavaBean;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -816,9 +816,9 @@ public class DataGenerator {
             String username = db_settings[1];
             String password = db_settings[2];
 
-            String firstnamesFile = "./data/firstnames.csv";
-            String surnamesFile = "./data/surnames.csv";
-            String addressesFile = "./data/city_of_houston.csv";
+            InputStream firstnamesFile = getClass().getResourceAsStream("/firstnames.csv");
+            InputStream surnamesFile = getClass().getResourceAsStream("/surnames.csv");
+            InputStream addressesFile = getClass().getResourceAsStream("/city_of_houston.csv");
 
             BufferedReader br = null;
             String line = "";
@@ -838,7 +838,8 @@ public class DataGenerator {
 
                 int index = 0;
 
-                br = new BufferedReader(new FileReader(firstnamesFile));
+                // InputStream into BufferedReader code taken from : https://stackoverflow.com/a/5200207
+                br = new BufferedReader(new InputStreamReader(firstnamesFile, StandardCharsets.UTF_8));
                 while ((line = br.readLine()) != null) {
 
                     if(!firstIteration) {
@@ -872,7 +873,9 @@ public class DataGenerator {
 
                 firstIteration = true;
 
-                br = new BufferedReader(new FileReader(surnamesFile));
+                // InputStream into BufferedReader code taken from : https://stackoverflow.com/a/5200207
+                br = new BufferedReader(new InputStreamReader(surnamesFile, StandardCharsets.UTF_8));
+                
                 while ((line = br.readLine()) != null) {
 
                     if(!firstIteration) {
@@ -906,7 +909,8 @@ public class DataGenerator {
 
                 firstIteration = true;
 
-                br = new BufferedReader(new FileReader(addressesFile));
+                // InputStream into BufferedReader code taken from : https://stackoverflow.com/a/5200207
+                br = new BufferedReader(new InputStreamReader(addressesFile, StandardCharsets.UTF_8));
                 while ((line = br.readLine()) != null) {
 
                     if(!firstIteration) {

@@ -28,7 +28,7 @@
                         <manifest>
                             <!-- Adds the classpath to the created manifest -->
                             <addClasspath>true</addClasspath>
-                            <!-- Configures the main class of the application --
+                            <!-- Configures the main class of the application -->
                             <!-- This attribute fixes "no main manifest attribute" error when running the JAR file --> 
                             <mainClass>Main</mainClass>
                         </manifest>
