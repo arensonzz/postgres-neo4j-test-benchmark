@@ -1,0 +1,42 @@
+name: ${project_name}
+services:
+  postgresql:
+    image: postgres:15.2
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    # healthcheck taken from : https://stackoverflow.com/a/72175755
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "postgres"]
+      interval: 1s
+      timeout: 10s
+      retries: 20
+  neo4j:
+    image: neo4j:5.6.0
+    ports:
+      - "7474:7474" # access neo4j through your browser at http://localhost:7474
+      - "7687:7687" 
+    restart: unless-stopped
+    environment:
+      - NEO4J_AUTH=${NEO4J_AUTH}
+    # healthcheck taken from : https://stackoverflow.com/a/74689805
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 20
+      start_period: 3s  
+  java-test-benchmark:
+    image: ${project_name}
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    environment:
+      - NEO4J_AUTH=${NEO4J_AUTH}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - NEO4J_HOST=${NEO4J_HOST}
