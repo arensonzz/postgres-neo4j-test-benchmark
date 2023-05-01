@@ -1,14 +1,14 @@
 import java.util.HashMap;
 
-public class Main
-{
-    public static void main(String[] args)
-    {
-        HashMap<String, String[]> sql_databases = new HashMap<>();
+public class Main {
+    public static void main(String[] args) {
+        //
+        // SQL DBMS Settings
+        //
+        HashMap<String, String[]> sql_databases = new HashMap<>(); // Map of available SQL DBMSs and their settings
+        String[] db_settings = new String[3]; // Array to temporarily store SQL DBMS settings
 
-        String[] db_settings = new String[3];
-
-        String mysql_db_url = "jdbc:postgresql://" + System.getenv("POSTGRES_HOST") + ":5432/";
+        String mysql_db_url = "jdbc:postgresql://" + System.getenv("POSTGRES_HOST") + ":5432/"; // DB Connection URL for PostgreSQL
         String db_driver = "org.postgresql.Driver";
         String db_username = "postgres";
         String db_password = System.getenv("POSTGRES_PASSWORD");
@@ -17,34 +17,32 @@ public class Main
         db_settings[1] = db_username;
         db_settings[2] = db_password;
 
-        sql_databases.put(mysql_db_url, db_settings);
+        sql_databases.put(mysql_db_url, db_settings); // Add PostgreSQL as SQL DBMS
 
-        HashMap<String, String> neo4j_settings = new HashMap<>();
+        //
+        // Neo4j DBMS Settings
+        //
+        HashMap<String, String> neo4j_settings = new HashMap<>(); // Map of Neo4j settings
 
-        String neo4J_db_url = "bolt://" + System.getenv("NEO4J_HOST") + ":7687";
-        String neo4J_auth = System.getenv("NEO4J_AUTH");
-        String neo4J_password = neo4J_auth.substring(neo4J_auth.lastIndexOf("/") + 1);
-        String neo4J_username = neo4J_auth.substring(0, neo4J_auth.lastIndexOf("/"));
+        String neo4j_db_url = "bolt://" + System.getenv("NEO4J_HOST") + ":7687"; // DB connection URL for Neo4j
+        String neo4j_auth = System.getenv("NEO4J_AUTH"); // Get Neo4j authentication string from the system
+        String neo4j_password = neo4j_auth.substring(neo4j_auth.lastIndexOf("/") + 1);
+        String neo4j_username = neo4j_auth.substring(0, neo4j_auth.lastIndexOf("/"));
 
-        System.out.println("neo4J_auth: " + neo4J_auth);
-        System.out.println("neo4j_password: " + neo4J_password);
-        System.out.println("neo4j_username: " + neo4J_username);
+        neo4j_settings.put("NEO4J_DB_URL", neo4j_db_url);
+        neo4j_settings.put("NEO4J_USERNAME", neo4j_username);
+        neo4j_settings.put("NEO4J_PASSWORD", neo4j_password);
 
-        neo4j_settings.put("NEO4J_DB_URL", neo4J_db_url);
-        neo4j_settings.put("NEO4J_USERNAME", neo4J_username);
-        neo4j_settings.put("NEO4J_PASSWORD", neo4J_password);
-
+        // Generate data for queries and 
         DataGenerator dataGenerator = new DataGenerator(sql_databases, neo4j_settings, mysql_db_url);
 
         dataGenerator.createTables();
-
         dataGenerator.createSampleTables(mysql_db_url);
-
         dataGenerator.loadSampleData(10, mysql_db_url);
 
         dataGenerator.insertItemsAndWorkTypes(10, 10, 10000, 10000);
-        dataGenerator.insertWorkData(10,1000,10,10,10);
-        dataGenerator.insertCustomerData(10,1000,10,10,0,10,10);
+        dataGenerator.insertWorkData(10, 1000, 10, 10, 10);
+        dataGenerator.insertCustomerData(10, 1000, 10, 10, 0, 10, 10);
 
         QueryTester queryTester = new QueryTester(sql_databases, neo4j_settings);
 
@@ -111,7 +109,7 @@ public class Main
 
         dataGenerator.deleteIndexes();
 
-        HashMap<String, Integer> customerInvoice =  dataGenerator.insertSequentialInvoices(1,10,100);
+        HashMap<String, Integer> customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 100);
 
         int invoiceIndex = customerInvoice.get("invoiceIndex");
         int customerIndex = customerInvoice.get("customerIndex");
@@ -122,7 +120,7 @@ public class Main
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
 
-        customerInvoice =  dataGenerator.insertSequentialInvoices(1,10,1000);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 1000);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
@@ -137,7 +135,7 @@ public class Main
 
         dataGenerator.createIndexes();
 
-        customerInvoice =  dataGenerator.insertSequentialInvoices(1,10,100);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 100);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
         customerIndex = customerInvoice.get("customerIndex");
@@ -148,14 +146,13 @@ public class Main
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
 
-        customerInvoice =  dataGenerator.insertSequentialInvoices(1,10,1000);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 1000);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
         queryTester.executeRecursiveQueryTestSQL(12, true, invoiceIndex);
         queryTester.executeRecursiveQueryTestCypher(12, true, invoiceIndex);
-        
-        dataGenerator.cleanSequentialInvoices(customerIndex);
 
+        dataGenerator.cleanSequentialInvoices(customerIndex);
     }
 }
