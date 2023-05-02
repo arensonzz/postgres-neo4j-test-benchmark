@@ -7,9 +7,13 @@ services:
     restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - PGUSER=${POSTGRES_USER}
+    volumes:
+      - ./.sql:/docker-entrypoint-initdb.d
     # healthcheck taken from : https://stackoverflow.com/a/72175755
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "postgres"]
+      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}" ,"-d", "postgres"]
       interval: 1s
       timeout: 10s
       retries: 20
