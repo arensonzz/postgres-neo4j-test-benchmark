@@ -1,0 +1,4 @@
+CREATE DATABASE testdata;
+
+CREATE DATABASE warehouse;
+

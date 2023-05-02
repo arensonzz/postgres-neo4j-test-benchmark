@@ -518,6 +518,12 @@ public class DataGenerator {
         return workTypeId;
     }
 
+    /**
+     * Delete a customer from both "invoice" and "customer" tables. This operation is performed in the order that
+     * does not violate foreign key constraints.
+     * 
+     * @param customerId
+     */
     public void cleanSequentialInvoices(int customerId) {
         String neo4j_db_url = neo4j_settings.get("NEO4J_DB_URL");
         String neo4j_username = neo4j_settings.get("NEO4J_USERNAME");
@@ -810,7 +816,7 @@ public class DataGenerator {
                 "unit varchar(10) NOT NULL CHECK (unit <> '')," +
                 "purchaseprice decimal(65,10) NOT NULL," +
                 "vat decimal(65,2) NOT NULL," +
-                "removed smallint NOT NULL DEFAULT 0," +
+                "removed boolean NOT NULL DEFAULT false," +
                 "PRIMARY KEY (id))";
         String workType = "CREATE TABLE IF NOT EXISTS worktype (" +
                 "id bigint NOT NULL," +
@@ -881,7 +887,7 @@ public class DataGenerator {
         }
     }
 
-    /*
+    /**
      * Generate and batch insert "customer" related data using the "testdata" table.
      */
     public void insertCustomerData(int threadCount, int iterationsPerThread, int batchExecuteValue, int invoiceFactor, 
@@ -939,7 +945,7 @@ public class DataGenerator {
         }
     }
 
-    /*
+    /**
      * Generate and batch insert sequential invoices using the "testdata" table.
      */
     public HashMap<String, Integer> insertSequentialInvoices(int threadCount, int batchExecuteValue, int sequentialInvoices) {
@@ -1009,7 +1015,7 @@ public class DataGenerator {
         return customerInvoice;
     }
 
-    /*
+    /**
      * Generate and batch insert "work" related data using the "testdata" table.
      */
     public void insertWorkData(int threadCount, int iterationsPerThread, int batchExecuteValue, int workTypeFactor, 
@@ -1049,7 +1055,7 @@ public class DataGenerator {
         }
     }
 
-    /*
+    /**
      * Generate and batch insert "item" and "worktype" data using the "testdata" table.
      */
     public void insertItemsAndWorkTypes(int threadCount, int batchExecuteValue, int itemCount, int workTypeCount) {
