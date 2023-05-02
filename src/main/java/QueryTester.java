@@ -28,18 +28,22 @@ public class QueryTester {
         ArrayList<Long> results;
         Connection connection = null;
         Statement stmt = null;
-        System.out.println("Executing SQL Query: " + sqlQuery + " in " + sql_databases.size() + " databases with " + iterations + " iterations.");
+        
+        System.out.println("Executing SQL Query: " + sqlQuery + " in " + sql_databases.size() + " databases with " + 
+                iterations + " iterations.");
         try {
             for (String db_url : sql_databases.keySet()) {
                 String[] db_info = sql_databases.get(db_url);
                 String db_driver = db_info[0];
                 String db_username = db_info[1];
                 String db_password = db_info[2];
+                
                 Class.forName(db_driver);
                 connection = DriverManager.getConnection(db_url + "warehouse", db_username, db_password);
                 DatabaseMetaData meta = connection.getMetaData();
                 String productName = meta.getDatabaseProductName();
                 String productVersion = meta.getDatabaseProductVersion();
+                
                 stmt = connection.createStatement();
                 results = new ArrayList<Long>();
                 ResultSet resultSet = null;

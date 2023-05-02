@@ -60,26 +60,30 @@ public class DataGeneratorThreadCustomer extends Thread {
             String neo4j_db_url = neo4j_settings.get("NEO4J_DB_URL");
             String neo4j_username = neo4j_settings.get("NEO4J_USERNAME");
             String neo4j_password = neo4j_settings.get("NEO4J_PASSWORD");
-            org.neo4j.driver.Driver driver = GraphDatabase.driver(neo4j_db_url, AuthTokens.basic(neo4j_username, neo4j_password));
+            org.neo4j.driver.Driver driver = GraphDatabase.driver(neo4j_db_url, AuthTokens.basic(
+                    neo4j_username, neo4j_password));
             Session session = driver.session();
-            Connection conn = null;
-            Statement stmt = null;
-            ResultSet resultSet = null;
             List<HashMap> preparedStatementsList = new ArrayList();
             List<Connection> connectionList = new ArrayList();
+            
             for (String db_url : sql_databases.keySet()) {
                 String[] db_info = sql_databases.get(db_url);
                 String db_driver = db_info[0];
                 String db_username = db_info[1];
                 String db_password = db_info[2];
                 Class.forName(db_driver);
-                Connection connection = DriverManager.getConnection(db_url, db_username, db_password);
+                Connection connection = DriverManager.getConnection(db_url + "warehouse", db_username, db_password);
                 connectionList.add(connection);
-                PreparedStatement customer = connection.prepareStatement("INSERT INTO warehouse.customer (id, name, address) VALUES (?,?,?)");
-                PreparedStatement invoice = connection.prepareStatement("INSERT INTO warehouse.invoice (id, customerId, state, duedate, previousinvoice) VALUES (?,?,?,?,?)");
-                PreparedStatement workInvoice = connection.prepareStatement("INSERT INTO warehouse.workinvoice (workId, invoiceId) VALUES (?,?)");
-                PreparedStatement target = connection.prepareStatement("INSERT INTO warehouse.target (id, name, address, customerid) VALUES (?,?,?,?)");
-                PreparedStatement workTarget = connection.prepareStatement("INSERT INTO warehouse.worktarget (workId, targetId) VALUES (?,?)");
+                PreparedStatement customer = connection.prepareStatement(
+                        "INSERT INTO customer (id, name, address) VALUES (?,?,?)");
+                PreparedStatement invoice = connection.prepareStatement(
+                        "INSERT INTO invoice (id, customerId, state, duedate, previousinvoice) VALUES (?,?,?,?,?)");
+                PreparedStatement workInvoice = connection.prepareStatement(
+                        "INSERT INTO workinvoice (workId, invoiceId) VALUES (?,?)");
+                PreparedStatement target = connection.prepareStatement(
+                        "INSERT INTO target (id, name, address, customerid) VALUES (?,?,?,?)");
+                PreparedStatement workTarget = connection.prepareStatement(
+                        "INSERT INTO worktarget (workId, targetId) VALUES (?,?)");
                 HashMap<String, PreparedStatement> preparedStatements = new HashMap<String, PreparedStatement>();
                 preparedStatements.put("customer", customer);
                 preparedStatements.put("invoice", invoice);
@@ -125,7 +129,8 @@ public class DataGeneratorThreadCustomer extends Thread {
         return selectedWorkIndexes;
     }
 
-    public void insertCustomer(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) throws SQLException, InterruptedException {
+    public void insertCustomer(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) 
+            throws SQLException {
         PreparedStatement customer;
         PreparedStatement invoice;
         PreparedStatement target;
@@ -133,11 +138,12 @@ public class DataGeneratorThreadCustomer extends Thread {
         PreparedStatement workInvoice;
         int i = 0;
         int j = 0;
+        
         System.out.println("Thread: " + threadIndex + " customerIndex: " + customerIndex);
         setIndexes(customerIndex);
         String name = firstnames.get(firstnameindex) + " " + surnames.get(surnameindex);
         String streetAddress = addresses.get(addressindex).get("street") + " " + addresses.get(addressindex).get("city") + " " + addresses.get(addressindex).get("district") + " " + addresses.get(addressindex).get("region") + " " + addresses.get(addressindex).get("postcode");
-        String sqlInsert = "INSERT INTO warehouse.customer (id, name, address) VALUES (" + customerIndex + ",\"" + name + "\",\"" + streetAddress + "\")";
+        String sqlInsert = "INSERT INTO customer (id, name, address) VALUES (" + customerIndex + ",\"" + name + "\",\"" + streetAddress + "\")";
         for (HashMap<String, PreparedStatement> preparedStatements : preparedStatementsList) {
             customer = preparedStatements.get("customer");
             customer.setInt(1, customerIndex);
@@ -171,15 +177,15 @@ public class DataGeneratorThreadCustomer extends Thread {
                     invoice.setInt(3, state);
                     invoice.setDate(4, sqlDueDate, gregorianCalendar);
                     if (invoiceIndex == firstInvoice) {
-                        sqlInsert = "INSERT INTO warehouse.invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + invoiceIndex + ")";
+                        sqlInsert = "INSERT INTO invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + invoiceIndex + ")";
                         invoice.setInt(5, invoiceIndex);
                     } else {
-                        sqlInsert = "INSERT INTO warehouse.invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + (invoiceIndex - 1) + ")";
+                        sqlInsert = "INSERT INTO invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + (invoiceIndex - 1) + ")";
                         invoice.setInt(5, invoiceIndex - 1);
                     }
                     invoice.addBatch();
                 } else {
-                    sqlInsert = "INSERT INTO warehouse.invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + invoiceIndex + ")";
+                    sqlInsert = "INSERT INTO invoice (id, customerId, state, duedate, previousinvoice) VALUES (" + invoiceIndex + "," + customerIndex + "," + state + ",STR_TO_DATE('" + dueDateAsString + "','%d-%m-%Y')," + invoiceIndex + ")";
                     invoice.setInt(1, invoiceIndex);
                     invoice.setInt(2, customerIndex);
                     invoice.setInt(3, state);
@@ -220,7 +226,7 @@ public class DataGeneratorThreadCustomer extends Thread {
             setIndexes(targetIndex);
             name = firstnames.get(firstnameindex) + " " + surnames.get(surnameindex);
             streetAddress = addresses.get(addressindex).get("street") + " " + addresses.get(addressindex).get("city") + " " + addresses.get(addressindex).get("district") + " " + addresses.get(addressindex).get("region") + " " + addresses.get(addressindex).get("postcode");
-            sqlInsert = "INSERT INTO warehouse.target (id, name, address, customerid) VALUES (" + targetIndex + ",\"" + name + "\",\"" + streetAddress + "\"," + customerIndex + ")";
+            sqlInsert = "INSERT INTO target (id, name, address, customerid) VALUES (" + targetIndex + ",\"" + name + "\",\"" + streetAddress + "\"," + customerIndex + ")";
             for (HashMap<String, PreparedStatement> preparedStatements : preparedStatementsList) {
                 target = preparedStatements.get("target");
                 target.setInt(1, targetIndex);
@@ -245,7 +251,7 @@ public class DataGeneratorThreadCustomer extends Thread {
             j = 0;
             while (j < workIndexes.size()) {
                 workIndex = workIndexes.get(j);
-                sqlInsert = "INSERT INTO warehouse.worktarget (workId, targetId) VALUES (" + workIndex + "," + targetIndex + ")";
+                sqlInsert = "INSERT INTO worktarget (workId, targetId) VALUES (" + workIndex + "," + targetIndex + ")";
                 for (HashMap<String, PreparedStatement> preparedStatements : preparedStatementsList) {
                     workTarget = preparedStatements.get("worktarget");
                     workTarget.setInt(1, workIndex);
@@ -274,7 +280,7 @@ public class DataGeneratorThreadCustomer extends Thread {
             while (j < workIndexes.size()) {
                 workIndex = workIndexes.get(j);
                 r.setSeed(invoiceIndex);
-                sqlInsert = "INSERT INTO warehouse.workinvoice (workId, invoiceId) VALUES (" + workIndex + "," + invoiceIndex + ")";
+                sqlInsert = "INSERT INTO workinvoice (workId, invoiceId) VALUES (" + workIndex + "," + invoiceIndex + ")";
                 for (HashMap<String, PreparedStatement> preparedStatements : preparedStatementsList) {
                     workInvoice = preparedStatements.get("workinvoice");
                     workInvoice.setInt(1, workIndex);

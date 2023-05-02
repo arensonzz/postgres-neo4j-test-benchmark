@@ -31,7 +31,10 @@ public class DataGeneratorThreadItemsAndWorkTypes extends Thread {
 
     private ReentrantLock lock;
 
-    public DataGeneratorThreadItemsAndWorkTypes(int threadIndex, int batchExecuteValue, HashMap<String, String[]> sql_databases, HashMap<String, String> neo4j_settings, ReentrantLock lock, int itemIndex, int itemCount, int workTypeIndex, int workTypeCount) {
+    public DataGeneratorThreadItemsAndWorkTypes(
+            int threadIndex, int batchExecuteValue, HashMap<String, String[]> sql_databases, 
+            HashMap<String, String> neo4j_settings, ReentrantLock lock, int itemIndex, int itemCount, 
+            int workTypeIndex, int workTypeCount) {
         this.threadIndex = threadIndex;
         this.batchExecuteValue = batchExecuteValue;
         this.itemIndex = itemIndex;
@@ -50,24 +53,29 @@ public class DataGeneratorThreadItemsAndWorkTypes extends Thread {
             String neo4j_db_url = neo4j_settings.get("NEO4J_DB_URL");
             String neo4j_username = neo4j_settings.get("NEO4J_USERNAME");
             String neo4j_password = neo4j_settings.get("NEO4J_PASSWORD");
-            org.neo4j.driver.Driver driver = GraphDatabase.driver(neo4j_db_url, AuthTokens.basic(neo4j_username, neo4j_password));
+            org.neo4j.driver.Driver driver = GraphDatabase.driver(neo4j_db_url, 
+                    AuthTokens.basic(neo4j_username, neo4j_password));
             Session session = driver.session();
-            Connection conn = null;
-            Statement stmt = null;
-            ResultSet resultSet = null;
             List<HashMap> preparedStatementsList = new ArrayList();
             List<Connection> connectionList = new ArrayList();
+            
             for (String db_url : sql_databases.keySet()) {
                 String[] db_info = sql_databases.get(db_url);
                 String db_driver = db_info[0];
                 String db_username = db_info[1];
                 String db_password = db_info[2];
+                
                 Class.forName(db_driver);
-                Connection connection = DriverManager.getConnection(db_url, db_username, db_password);
+                Connection connection = DriverManager.getConnection(db_url + "warehouse", db_username, db_password);
+                
                 connectionList.add(connection);
-                PreparedStatement item = connection.prepareStatement("INSERT INTO warehouse.item (id, name, balance, unit, purchaseprice, vat, removed) VALUES (?,?,?,?,?,?,?)");
-                PreparedStatement workType = connection.prepareStatement("INSERT INTO warehouse.worktype (id, name, price) VALUES (?, ?, ?)");
+                
+                PreparedStatement item = connection.prepareStatement(
+                        "INSERT INTO item (id, name, balance, unit, purchaseprice, vat, removed) VALUES (?,?,?,?,?,?,?)");
+                PreparedStatement workType = connection.prepareStatement(
+                        "INSERT INTO worktype (id, name, price) VALUES (?, ?, ?)");
                 HashMap<String, PreparedStatement> preparedStatements = new HashMap<String, PreparedStatement>();
+                
                 preparedStatements.put("item", item);
                 preparedStatements.put("worktype", workType);
                 preparedStatementsList.add(preparedStatements);
@@ -94,17 +102,20 @@ public class DataGeneratorThreadItemsAndWorkTypes extends Thread {
         session.writeTransaction(tx -> tx.run(cypherQuery));
     }
 
-    public void insertItems(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) throws SQLException, InterruptedException {
+    public void insertItems(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) 
+            throws SQLException {
         PreparedStatement item;
         System.out.println("threadIndex: " + threadIndex + " itemIndex: " + itemIndex);
         Random r = new Random(itemIndex);
         int balance = r.nextInt(100);
+        
         r.setSeed(itemIndex);
         float purchaseprice = r.nextFloat() + r.nextInt(100);
         r.setSeed(itemIndex);
         int vat = r.nextInt(50);
         r.setSeed(itemIndex);
         boolean removed = r.nextBoolean();
+        
         if (itemIndex % 2 == 0) {
             r.setSeed(itemIndex);
             r = new Random(itemIndex);
@@ -187,10 +198,12 @@ public class DataGeneratorThreadItemsAndWorkTypes extends Thread {
         }
     }
 
-    public void insertWorkTypes(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) throws SQLException, InterruptedException {
+    public void insertWorkTypes(int iterator, int batchExecuteValue, Session session, List<HashMap> preparedStatementsList) 
+            throws SQLException {
         PreparedStatement workType;
         Random r = new Random(workTypeIndex);
         int price = r.nextInt(100);
+        
         for (HashMap<String, PreparedStatement> preparedStatements : preparedStatementsList) {
             workType = preparedStatements.get("worktype");
             workType.setInt(1, workTypeIndex);

@@ -1,3 +1,5 @@
+import org.antlr.v4.runtime.atn.SemanticContext;
+
 import java.util.HashMap;
 
 public class Main {
@@ -33,17 +35,24 @@ public class Main {
         neo4j_settings.put("NEO4J_USERNAME", neo4j_username);
         neo4j_settings.put("NEO4J_PASSWORD", neo4j_password);
 
-        // Generate data for queries and 
+        // DataGenerator is used both for DDL and DML operations. It first creates tables.
+        // Then loads sample data from csv files, and by using that data generates necessary SQL tables
+        // and Neo4j nodes for the benchmark.
         DataGenerator dataGenerator = new DataGenerator(sql_databases, neo4j_settings, mysql_db_url);
 
+        // Create tables for "warehouse" and "testdata" databases
         dataGenerator.createTables();
         dataGenerator.createSampleTables(mysql_db_url);
+        // Insert sample data into "testdata" database.
+        // This will be used for generating "warehouse" table records.
         dataGenerator.loadSampleData(10, mysql_db_url);
 
+        // Generate benchmark records for "warehouse" database
         dataGenerator.insertItemsAndWorkTypes(10, 10, 10000, 10000);
         dataGenerator.insertWorkData(10, 1000, 10, 10, 10);
         dataGenerator.insertCustomerData(10, 1000, 10, 10, 0, 10, 10);
 
+        // QueryTester is used for 
         QueryTester queryTester = new QueryTester(sql_databases, neo4j_settings);
 
         System.out.println("NO INDEXES");
