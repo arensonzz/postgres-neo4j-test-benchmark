@@ -12,11 +12,11 @@ include .env
 all: .env build run
 
 build:
-	# build Java application using Maven into Docker image
+	# Build Java application using Maven into Docker image
 	docker build -t ${project_name} .
 
 run:
-	# start Docker compose services
+	# Start Docker compose services
 	docker compose up -d
 
 # Create .env file from .env.example if it does not exist
@@ -24,7 +24,7 @@ run:
 	cp .env.example .env
 
 clean:
-	@echo Clean target run
+	# Clean target run
 	docker compose down --volumes
 
 
