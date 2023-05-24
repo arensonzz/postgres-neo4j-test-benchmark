@@ -1,4 +1,4 @@
-name: ${project_name}
+name: ${PROJECT_NAME}
 services:
   postgresql:
     image: postgres:15.2
@@ -34,7 +34,7 @@ services:
       retries: 20
       start_period: 3s  
   # java-test-benchmark:
-    # image: ${project_name}
+    # image: ${PROJECT_NAME}
     # depends_on:
       # postgresql:
         # condition: service_healthy

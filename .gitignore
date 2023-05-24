@@ -10,3 +10,6 @@ dependency-reduced-pom.xml
 # Environment variable files (might contain sensitive information)
 .env*
 !.env.example
+
+!/jars
+/jars/*
