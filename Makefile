@@ -8,7 +8,7 @@ include .env
 .DELETE_ON_ERROR:
 
 # Default target
-all: .env build run
+all: .env clean up mvn run
 
 #
 # General Targets
@@ -23,7 +23,7 @@ mvn: _mvn-package _mvn-clean
 
 run:
 	# Start Java benchmark program.
-	@docker run -it --network="${PROJECT_NAME}_default" --env-file=".env" -v "$(shell pwd)/jars":/usr/src/mymaven -w /usr/src/mymaven eclipse-temurin:8-jre-alpine java -jar ${PROJECT_NAME}-1.0-SNAPSHOT.jar
+	@docker run -it --network="${PROJECT_NAME}_default" --env-file=".env" -v "$(shell pwd)/jars":/usr/src/mymaven -w /usr/src/mymaven eclipse-temurin:8-jre-alpine java -jar ${PROJECT_NAME}-1.0-SNAPSHOT.jar debug 1
 
 clean: _mvn-clean
 	# Clear the "jars" directory.

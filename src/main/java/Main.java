@@ -3,7 +3,24 @@ import org.antlr.v4.runtime.atn.SemanticContext;
 import java.util.HashMap;
 
 public class Main {
+    private static boolean IS_DEBUG_MODE = false;
+    private static int QUERY_TEST_ITERATION_COUNT = 12;
+    
     public static void main(String[] args) {
+        //
+        // Parse CLI parameters
+        //
+        if (args.length >= 1 && args[0].equalsIgnoreCase("debug")) {
+            IS_DEBUG_MODE = true;
+            if (args.length >= 2) {
+                try {
+                    QUERY_TEST_ITERATION_COUNT = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
         //
         // SQL DBMS Settings
         //
@@ -48,17 +65,24 @@ public class Main {
         dataGenerator.loadSampleData(10, mysql_db_url);
 
         // Generate benchmark records for "warehouse" database
-        dataGenerator.insertItemsAndWorkTypes(10, 10, 10000, 10000);
-        dataGenerator.insertWorkData(10, 1000, 10, 10, 10);
-        dataGenerator.insertCustomerData(10, 1000, 10, 10, 0, 10, 10);
+        
+        if (IS_DEBUG_MODE) {
+            dataGenerator.insertItemsAndWorkTypes(1, 10, 10, 100);
+            dataGenerator.insertWorkData(1, 1, 10, 10, 10);
+            dataGenerator.insertCustomerData(1, 1, 10, 10, 0, 10, 10);
+        } else {
+            dataGenerator.insertItemsAndWorkTypes(10, 10, 10000, 10000);
+            dataGenerator.insertWorkData(10, 1000, 10, 10, 10);
+            dataGenerator.insertCustomerData(10, 1000, 10, 10, 0, 10, 10);
+        }
 
         // QueryTester is used for 
         QueryTester queryTester = new QueryTester(sql_databases, neo4j_settings);
 
         System.out.println("NO INDEXES");
 
-        queryTester.executeQueryTestsSQL(12, true);
-        queryTester.executeQueryTestsCypher(12, true);
+        queryTester.executeQueryTestsSQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeQueryTestsCypher(QUERY_TEST_ITERATION_COUNT, true);
 
         System.out.println();
         System.out.println("CREATING INDEXES");
@@ -66,8 +90,8 @@ public class Main {
 
         dataGenerator.createIndexes();
 
-        queryTester.executeQueryTestsSQL(12, true);
-        queryTester.executeQueryTestsCypher(12, true);
+        queryTester.executeQueryTestsSQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeQueryTestsCypher(QUERY_TEST_ITERATION_COUNT, true);
 
 
         System.out.println();
@@ -76,8 +100,8 @@ public class Main {
 
         dataGenerator.deleteIndexes();
 
-        queryTester.executeComplexQueryTestSQL(12, true);
-        queryTester.executeComplexQueryTestCypher(12, true);
+        queryTester.executeComplexQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeComplexQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true);
 
         System.out.println();
         System.out.println("CREATING INDEXES");
@@ -85,8 +109,8 @@ public class Main {
 
         dataGenerator.createIndexes();
 
-        queryTester.executeComplexQueryTestSQL(12, true);
-        queryTester.executeComplexQueryTestCypher(12, true);
+        queryTester.executeComplexQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeComplexQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true);
 
         System.out.println();
         System.out.println("DELETING INDEXES");
@@ -94,14 +118,14 @@ public class Main {
 
         dataGenerator.deleteIndexes();
 
-        System.out.println();
-        System.out.println("REMOVING MySQL");
-        System.out.println();
-        sql_databases.remove(mysql_db_url);
+        //System.out.println();
+        //System.out.println("REMOVING MySQL");
+        //System.out.println();
+        //sql_databases.remove(mysql_db_url);
 
 
-        queryTester.executeQueryWithDefinedKeySQL(12, true);
-        queryTester.executeQueryWithDefinedKeyCypher(12, true);
+        queryTester.executeQueryWithDefinedKeySQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeQueryWithDefinedKeyCypher(QUERY_TEST_ITERATION_COUNT, true);
 
         System.out.println();
         System.out.println("CREATING INDEXES");
@@ -109,8 +133,8 @@ public class Main {
 
         dataGenerator.createIndexes();
 
-        queryTester.executeQueryWithDefinedKeySQL(12, true);
-        queryTester.executeQueryWithDefinedKeyCypher(12, true);
+        queryTester.executeQueryWithDefinedKeySQL(QUERY_TEST_ITERATION_COUNT, true);
+        queryTester.executeQueryWithDefinedKeyCypher(QUERY_TEST_ITERATION_COUNT, true);
 
         System.out.println();
         System.out.println("DELETING INDEXES");
@@ -123,8 +147,8 @@ public class Main {
         int invoiceIndex = customerInvoice.get("invoiceIndex");
         int customerIndex = customerInvoice.get("customerIndex");
 
-        queryTester.executeRecursiveQueryTestSQL(12, true, invoiceIndex);
-        queryTester.executeRecursiveQueryTestCypher(12, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
 
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
@@ -133,8 +157,8 @@ public class Main {
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
-        queryTester.executeRecursiveQueryTestSQL(12, true, invoiceIndex);
-        queryTester.executeRecursiveQueryTestCypher(12, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
 
         dataGenerator.cleanSequentialInvoices(customerIndex);
 
@@ -149,8 +173,8 @@ public class Main {
         invoiceIndex = customerInvoice.get("invoiceIndex");
         customerIndex = customerInvoice.get("customerIndex");
 
-        queryTester.executeRecursiveQueryTestSQL(12, true, invoiceIndex);
-        queryTester.executeRecursiveQueryTestCypher(12, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
 
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
@@ -159,8 +183,8 @@ public class Main {
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
-        queryTester.executeRecursiveQueryTestSQL(12, true, invoiceIndex);
-        queryTester.executeRecursiveQueryTestCypher(12, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestSQL(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
+        queryTester.executeRecursiveQueryTestCypher(QUERY_TEST_ITERATION_COUNT, true, invoiceIndex);
 
         dataGenerator.cleanSequentialInvoices(customerIndex);
     }
