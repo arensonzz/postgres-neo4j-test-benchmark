@@ -631,15 +631,15 @@ public class DataGenerator {
      */
     public void deleteIndexesSQL() {
 //        String dropInvoiceIndexIfExistsSQL = "DROP INDEX IF EXISTS invoiceIndex ON invoice;";
-        String dropInvoiceIndexSQL = "DROP INDEX invoiceIndex ON invoice;";
+        String dropInvoiceIndexSQL = "DROP INDEX invoiceIndex;";
 //        String dropWorktypeIndexIfExistsSQL = "DROP INDEX IF EXISTS worktypeIndex ON worktype;";
-        String dropWorktypeIndexSQL = "DROP INDEX worktypeIndex ON worktype;";
+        String dropWorktypeIndexSQL = "DROP INDEX worktypeIndex;";
 //        String dropWorkhoursIndexIfExistsSQL = "DROP INDEX IF EXISTS workhoursIndex ON workhours;";
-        String dropWorkhoursIndexSQL = "DROP INDEX workhoursIndex ON workhours;";
+        String dropWorkhoursIndexSQL = "DROP INDEX workhoursIndex;";
 //        String dropUseditemIndexIfExistsSQL = "DROP INDEX IF EXISTS useditemIndex ON useditem;";
-        String dropUseditemIndexSQL = "DROP INDEX useditemIndex ON useditem;";
+        String dropUseditemIndexSQL = "DROP INDEX useditemIndex;";
 //        String dropItemIndexIfExistsSQL = "DROP INDEX IF EXISTS itemIndex ON item;";
-        String dropItemIndexSQL = "DROP INDEX itemIndex ON item;";
+        String dropItemIndexSQL = "DROP INDEX itemIndex;";
         for (String db_url : sql_databases.keySet()) {
             String[] db_settings = sql_databases.get(db_url);
             executeSQLUpdate(dropInvoiceIndexSQL, db_url + "warehouse", db_settings);
