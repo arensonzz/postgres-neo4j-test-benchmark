@@ -1,4 +1,4 @@
-# Makefile for postgres-neo4j-test-benchmark
+# Makefile for postgres-neo4j-java-benchmark
 #
 # @author arensonzz
 

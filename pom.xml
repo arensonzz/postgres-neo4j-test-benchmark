@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
-    <artifactId>postgres-neo4j-test-benchmark</artifactId>
+    <artifactId>postgres-neo4j-java-benchmark</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
