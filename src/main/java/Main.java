@@ -67,9 +67,9 @@ public class Main {
         // Generate benchmark records for "warehouse" database
         
         if (IS_DEBUG_MODE) {
-            dataGenerator.insertItemsAndWorkTypes(1, 10, 10, 100);
-            dataGenerator.insertWorkData(1, 1, 10, 10, 10);
-            dataGenerator.insertCustomerData(1, 1, 10, 10, 0, 10, 10);
+            dataGenerator.insertItemsAndWorkTypes(2, 10, 10, 100);
+            dataGenerator.insertWorkData(2, 10, 10, 10, 10);
+            dataGenerator.insertCustomerData(2, 10, 10, 10, 0, 10, 10);
         } else {
             dataGenerator.insertItemsAndWorkTypes(10, 10, 10000, 10000);
             dataGenerator.insertWorkData(10, 1000, 10, 10, 10);
@@ -141,8 +141,8 @@ public class Main {
         System.out.println();
 
         dataGenerator.deleteIndexes();
-
-        HashMap<String, Integer> customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 100);
+        
+        HashMap<String, Integer> customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, (IS_DEBUG_MODE) ? 10 : 100);
 
         int invoiceIndex = customerInvoice.get("invoiceIndex");
         int customerIndex = customerInvoice.get("customerIndex");
@@ -153,7 +153,7 @@ public class Main {
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
 
-        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 1000);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, (IS_DEBUG_MODE) ? 100 : 1000);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
@@ -168,7 +168,7 @@ public class Main {
 
         dataGenerator.createIndexes();
 
-        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 100);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, (IS_DEBUG_MODE) ? 10 : 100);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
         customerIndex = customerInvoice.get("customerIndex");
@@ -179,7 +179,7 @@ public class Main {
         System.out.println("customerIndex " + customerIndex);
         dataGenerator.cleanSequentialInvoices(customerIndex);
 
-        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, 1000);
+        customerInvoice = dataGenerator.insertSequentialInvoices(1, 10, (IS_DEBUG_MODE) ? 10 : 1000);
 
         invoiceIndex = customerInvoice.get("invoiceIndex");
 
